@@ -19,5 +19,4 @@ GLOBAL OPTIONS:
    --type value   generate script type metadata (default: "script")
    --help, -h     show help
    --version, -v  print the version
-2020/05/02 20:59:05 Required flag "type" not set
 ```
