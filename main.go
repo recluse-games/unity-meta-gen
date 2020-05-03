@@ -19,9 +19,17 @@ func check(e error) {
 
 func main() {
 	app := &cli.App{
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "type",
+				Value:    "script",
+				Usage:    "generate script type metadata",
+				Required: true,
+			},
+		},
 		Action: func(c *cli.Context) error {
 			startingPath := c.Args().Get(0)
-			metaDataFileContent := createMetaDataStrings(2)
+			metaDataFileContent := createMetaDataStrings(2, c.String("type"))
 			originalFilePaths := getFilePaths(startingPath)
 			metaDataFilePaths := createMetaDataFilePaths(originalFilePaths)
 			writeMetaDataFiles(metaDataFilePaths, metaDataFileContent)
@@ -94,8 +102,10 @@ func createMetaDataFileName(path string) string {
 	return metaDataFileName
 }
 
-func createMetaDataStrings(metaDataVersion int) []string {
-	metaDataFile := []string{
+func createMetaDataStrings(metaDataVersion int, metaDataType string) []string {
+	metaDataTemplates := map[string][]string{}
+
+	scriptMetaDataTemplate := []string{
 		fmt.Sprintf("fileFormattedVersion: %d\n", metaDataVersion),
 		fmt.Sprintf("guid: %s\n", uuid.New()),
 		fmt.Sprintf("MonoImporter:\n"),
@@ -109,7 +119,9 @@ func createMetaDataStrings(metaDataVersion int) []string {
 		fmt.Sprintf("\tassetBundleVariant: \n"),
 	}
 
-	return metaDataFile
+	metaDataTemplates["script"] = scriptMetaDataTemplate
+
+	return metaDataTemplates[metaDataType]
 }
 
 func getFilePaths(startingPath string) []string {
